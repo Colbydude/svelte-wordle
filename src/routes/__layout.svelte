@@ -5,6 +5,6 @@
 
 <Header />
 
-<main>
+<main class="my-0 mx-auto flex w-full max-w-[500px] flex-col" style="height: calc(100% - 50px);">
     <slot />
 </main>
