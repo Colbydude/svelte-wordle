@@ -13,7 +13,10 @@
     export let row = 0;
 </script>
 
-<div class="grid grid-cols-5 gap-[5px]">
+<div
+    class="grid gap-[5px]"
+    style="grid-template-columns: repeat({game.characters}, minmax(0, 1fr));"
+>
     {#each letters as letter, i}
         <Tile {letter} status={$game.evaluations[row][i]} />
     {/each}

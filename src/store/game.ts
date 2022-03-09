@@ -78,12 +78,20 @@ export default class Game {
         return this._board;
     }
 
+    public get characters(): number {
+        return this._characters;
+    }
+
     public get evaluations(): EvaluationStatus[][] {
         return this._evaluations;
     }
 
     public get guess(): number {
         return this._currentGuess + 1;
+    }
+
+    public get guesses(): number {
+        return this._guesses;
     }
 
     public get letterEvaluations(): Map<string, EvaluationStatus> {

@@ -14,10 +14,13 @@
 
     const handleWindowResize = () => {
         boardWidth = Math.min(
-            Math.floor((document.documentElement.clientHeight - 50 - 200) * (5 / 6)),
+            Math.floor(
+                (document.documentElement.clientHeight - 50 - 200) *
+                    (game.characters / game.guesses)
+            ),
             350
         );
-        boardHeight = 6 * Math.floor(boardWidth / 5);
+        boardHeight = game.guesses * Math.floor(boardWidth / game.characters);
     };
 
     onMount(() => {
@@ -31,7 +34,7 @@
     <div
         class="grid w-full grid-rows-6 gap-[5px] p-[10px]"
         on:load={handleWindowResize}
-        style={`width: ${boardWidth}px; height: ${boardHeight}px;`}
+        style="width: {boardWidth}px; height: {boardHeight}px; grid-template-rows: repeat({game.guesses}, minmax(0, 1fr));"
     >
         {#each $game.board as guess, row}
             <Row letters={guess} {row} />
