@@ -1,9 +1,19 @@
 <script lang="ts">
+    import { createEventDispatcher } from "svelte";
+
     const keyboardRows = [
         ["q", "w", "e", "r", "t", "y", "u", "i", "o", "p"],
         ["a", "s", "d", "f", "g", "h", "j", "k", "l"],
-        ["enter", "z", "x", "c", "v", "b", "n", "m", "backspace"],
+        ["Enter", "z", "x", "c", "v", "b", "n", "m", "Backspace"],
     ];
+
+    const dispatch = createEventDispatcher<{ message: { key: string } }>();
+
+    const handleClick = (key: string) => () => {
+        dispatch("message", {
+            key,
+        });
+    };
 </script>
 
 <div class="mx-2 my-0 h-[200px]">
@@ -15,10 +25,11 @@
             {#each row as letter, letterIndex}
                 <button
                     class:end={letterIndex === row.length - 1}
-                    class:one-and-a-half={letter === "enter" || letter === "backspace"}
+                    class:one-and-a-half={letter === "Enter" || letter === "Backspace"}
                     class="b-0 m-0 mr-[6px] flex h-[58px] flex-1 cursor-pointer select-none items-center justify-center rounded bg-gray-500 p-0 text-[13px] font-bold uppercase text-black dark:text-white"
+                    on:click|preventDefault={handleClick(letter)}
                 >
-                    {#if letter === "backspace"}
+                    {#if letter === "Backspace"}
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
                             height="24"

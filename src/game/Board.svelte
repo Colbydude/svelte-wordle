@@ -2,7 +2,13 @@
     import { onMount } from "svelte";
     import Row from "./Row.svelte";
 
-    const guesses = ["vague", "     ", "     ", "     ", "     ", "     "];
+    export let guesses = [
+        [" ", " ", " ", " ", " "],
+        [" ", " ", " ", " ", " "],
+        [" ", " ", " ", " ", " "],
+        [" ", " ", " ", " ", " "],
+        [" ", " ", " ", " ", " "],
+    ];
     let boardWidth = 0;
     let boardHeight = 0;
 
