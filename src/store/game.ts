@@ -1,8 +1,11 @@
 import { writable, type Subscriber, type Unsubscriber, type Writable } from "svelte/store";
 
 import { SUPPORTED_KEYS } from "../constants";
+import { EvaluationStatus, GameState } from "../types";
 
 export default class Game {
+    static readonly CONTEXT_KEY = "game";
+
     /**
      * The correct solution for this game.
      */
@@ -21,17 +24,27 @@ export default class Game {
     /**
      * Character (col) of the current guess we're on.
      */
-    private _currentChar: number = 0;
+    private _currentChar = 0;
 
     /**
      * The current guess (row) we're on.
      */
-    private _currentGuess: number = 0;
+    private _currentGuess = 0;
 
     /**
-     * Whether or not the game has ended (on winning or running out of guesses).
+     * Evaluation status of each tile on the board.
      */
-    private _gameOver: boolean = false;
+    private _evaluations: EvaluationStatus[][] = [];
+
+    /**
+     * The evaluation status of a given letter. For keeping track of the keys on the keyboard.
+     */
+    private _letterEvaluations: Map<string, EvaluationStatus>;
+
+    /**
+     * The current game state.
+     */
+    private _gameState: GameState = GameState.InProgress;
 
     /**
      * The number of guesses the player can make during this game.
@@ -39,24 +52,9 @@ export default class Game {
     private _guesses: number;
 
     /**
-     * Whether or not the player has guessed the correct answer.
-     */
-    private _hasWon: boolean = false;
-
-    /**
-     * The most recently submitted guess.
-     */
-    private _lastGuess: string = "";
-
-    /**
      * The writable store so Svelte components can subscribe to this class's properties.
      */
     private _store: Writable<Game>;
-
-    /**
-     * The list of characters that have been used.
-     */
-    private _usedCharacters: Set<string> = new Set<string>();
 
     constructor(guesses: number, characters: number, answer: string) {
         if (answer.length !== characters) {
@@ -80,16 +78,16 @@ export default class Game {
         return this._board;
     }
 
+    public get evaluations(): EvaluationStatus[][] {
+        return this._evaluations;
+    }
+
     public get guess(): number {
         return this._currentGuess + 1;
     }
 
-    public get lastGuess(): string {
-        return this._lastGuess;
-    }
-
-    public get usedCharacters(): Set<string> {
-        return this._usedCharacters;
+    public get letterEvaluations(): Map<string, EvaluationStatus> {
+        return this._letterEvaluations;
     }
 
     /**
@@ -102,7 +100,7 @@ export default class Game {
             return;
         }
 
-        if (this._gameOver || this._hasWon) {
+        if (this._gameState !== GameState.InProgress) {
             return;
         }
 
@@ -150,20 +148,25 @@ export default class Game {
     }
 
     /**
-     * Sets the board and every tile back to empty.
+     * Sets the board and every evaluation back to empty.
      */
     private clearBoard(): void {
         const emptyBoard: string[][] = [];
+        const emptyEvals: EvaluationStatus[][] = [];
 
         for (let row = 0; row < this._guesses; row++) {
             emptyBoard[row] = [];
+            emptyEvals[row] = [];
 
             for (let col = 0; col < this._characters; col++) {
                 emptyBoard[row][col] = " ";
+                emptyEvals[row][col] = EvaluationStatus.Unknown;
             }
         }
 
         this._board = emptyBoard;
+        this._evaluations = emptyEvals;
+        this._letterEvaluations = new Map<string, EvaluationStatus>();
     }
 
     /**
@@ -179,19 +182,71 @@ export default class Game {
     }
 
     /**
+     * Evaluate and determine the status of the guess.
+     * @TODO will need some work for correct letter counts.
+     */
+    private evaluateRow(): void {
+        const evaluations: EvaluationStatus[] = [];
+
+        for (let i = 0; i < this._characters; i++) {
+            const letter = this._board[this._currentGuess][i];
+            let evaluation: EvaluationStatus = EvaluationStatus.Absent;
+
+            // If the letter is in the correct spot,
+            // mark it as such and move on.
+            if (letter === this._answer[i]) {
+                evaluation = EvaluationStatus.Correct;
+                evaluations[i] = evaluation;
+                this.setLetterEvaluation(letter, evaluation);
+                continue;
+            }
+
+            // Otherwise, see if it exists in the word at all.
+            for (let k = 0; k < this._characters; k++) {
+                if (letter === this._answer[k]) {
+                    evaluation = EvaluationStatus.Present;
+                    break;
+                }
+            }
+
+            evaluations[i] = evaluation;
+            this.setLetterEvaluation(letter, evaluation);
+        }
+
+        this._evaluations[this._currentGuess] = evaluations;
+    }
+
+    /**
+     * Handles setting the letter evaluation. Only sets the state if the new evaluation is a higher value.
+     *
+     * @param letter
+     * @param evaluation
+     */
+    private setLetterEvaluation(letter: string, evaluation: EvaluationStatus): void {
+        if (this._letterEvaluations.has(letter)) {
+            if (evaluation > this._letterEvaluations.get(letter)) {
+                this._letterEvaluations.set(letter, evaluation);
+                return;
+            }
+        } else {
+            this._letterEvaluations.set(letter, evaluation);
+        }
+    }
+
+    /**
      * Submit and process the guess and determine if we've won.
      */
     private submitGuess(): void {
-        this._board[this._currentGuess].forEach((letter) => {
-            this._usedCharacters.add(letter);
-        });
+        this.evaluateRow();
 
-        this._lastGuess = this._board[this._currentGuess].join("");
+        // Determine if we won if every eval in the row is correct.
+        const didWin = this._evaluations[this._currentGuess].every(
+            (evl) => evl === EvaluationStatus.Correct
+        );
 
         // We won!
-        if (this._lastGuess === this._answer) {
-            this._hasWon = true;
-            this._gameOver = true;
+        if (didWin) {
+            this._gameState = GameState.Win;
             console.log("WINNER");
             return;
         }
@@ -201,7 +256,7 @@ export default class Game {
 
         // Ran out of guesses. :(
         if (this._currentGuess >= this._guesses) {
-            this._gameOver = true;
+            this._gameState = GameState.Lose;
             console.log("GAME OVER");
         }
     }

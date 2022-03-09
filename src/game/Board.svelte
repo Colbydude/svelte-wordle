@@ -1,14 +1,14 @@
 <script lang="ts">
-    import { onMount } from "svelte";
+    import { getContext, onMount } from "svelte";
+
     import Row from "./Row.svelte";
 
-    export let guesses = [
-        [" ", " ", " ", " ", " "],
-        [" ", " ", " ", " ", " "],
-        [" ", " ", " ", " ", " "],
-        [" ", " ", " ", " ", " "],
-        [" ", " ", " ", " ", " "],
-    ];
+    import GameStore from "../store/game";
+    import type { GameContext } from "../types";
+
+    const { getGame } = getContext<GameContext>(GameStore.CONTEXT_KEY);
+    const game = getGame();
+
     let boardWidth = 0;
     let boardHeight = 0;
 
@@ -33,8 +33,8 @@
         on:load={handleWindowResize}
         style={`width: ${boardWidth}px; height: ${boardHeight}px;`}
     >
-        {#each guesses as guess}
-            <Row letters={guess} />
+        {#each $game.board as guess, row}
+            <Row letters={guess} {row} />
         {/each}
     </div>
 </div>
