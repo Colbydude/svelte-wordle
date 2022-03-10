@@ -1,6 +1,7 @@
 import { writable, type Subscriber, type Unsubscriber, type Writable } from "svelte/store";
 
 import { SUPPORTED_KEYS } from "../constants";
+import { dictionary } from "../game/words";
 import { EvaluationStatus, GameState } from "../types";
 
 export default class Game {
@@ -185,6 +186,11 @@ export default class Game {
             return;
         }
 
+        if (!dictionary.includes(this._board[this._currentGuess].join(""))) {
+            alert("Not a valid word!");
+            return;
+        }
+
         this.submitGuess();
         this._store.set(this);
     }
@@ -265,7 +271,7 @@ export default class Game {
         // Ran out of guesses. :(
         if (this._currentGuess >= this._guesses) {
             this._gameState = GameState.Lose;
-            console.log("GAME OVER");
+            alert(`GAME OVER - Answer was: ${this._answer}`);
         }
     }
 

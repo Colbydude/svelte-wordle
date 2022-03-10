@@ -5,9 +5,9 @@
     import Keyboard from "./Keyboard.svelte";
 
     import GameStore from "../store/game";
+    import { getDailyWord } from "../utils";
 
-    // @TODO "API" for answer.
-    const game = new GameStore(6, 5, "vague");
+    const game = new GameStore(6, 5, getDailyWord());
 
     // Event Handlers
     const handleKeyUp = (e: KeyboardEvent) => {
