@@ -1,3 +1,21 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.absent,
+.correct,
+.present {
+    @apply text-white;
+}
+
+.absent {
+    @apply border-gray-500 bg-gray-500 dark:border-gray-700 dark:bg-gray-700 !important;
+}
+
+.correct {
+    @apply border-green-500 bg-green-500 !important;
+}
+
+.present {
+    @apply border-yellow-500 bg-yellow-500 !important;
+}

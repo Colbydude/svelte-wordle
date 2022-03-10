@@ -8,9 +8,9 @@
     const game = getGame();
 
     const keyboardRows = [
-        ["q", "w", "e", "r", "t", "y", "u", "i", "o", "p"],
-        ["a", "s", "d", "f", "g", "h", "j", "k", "l"],
-        ["Enter", "z", "x", "c", "v", "b", "n", "m", "Backspace"],
+        [..."qwertyuiop"],
+        [..."asdfghjkl"],
+        ["Enter", ..."zxcvbnm", "Backspace"],
     ];
 
     const dispatch = createEventDispatcher<KeyPressMessage>();
@@ -35,7 +35,7 @@
                     class:end={letterIndex === row.length - 1}
                     class:one-and-a-half={letter === "Enter" || letter === "Backspace"}
                     class:present={$game.letterEvaluations.get(letter) === EvaluationStatus.Present}
-                    class="b-0 m-0 mr-[6px] flex h-[58px] flex-1 cursor-pointer select-none items-center justify-center rounded bg-gray-500 p-0 text-[13px] font-bold uppercase text-black dark:text-white"
+                    class="b-0 m-0 mr-[6px] flex h-[58px] flex-1 cursor-pointer select-none items-center justify-center rounded bg-gray-300 p-0 text-[13px] font-bold uppercase text-black dark:bg-gray-500 dark:text-white"
                     on:click|preventDefault={handleClick(letter)}
                 >
                     {#if letter === "Backspace"}
@@ -63,14 +63,6 @@
 </div>
 
 <style>
-    button.absent {
-        @apply border-gray-700 bg-gray-700 text-white;
-    }
-
-    button.correct {
-        @apply border-green-500 bg-green-500 text-white;
-    }
-
     button.end {
         @apply m-0;
     }
@@ -78,9 +70,5 @@
     button.one-and-a-half {
         @apply text-[12px];
         flex: 1.5;
-    }
-
-    button.present {
-        @apply border-yellow-500 bg-yellow-500 text-white;
     }
 </style>
