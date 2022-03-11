@@ -197,54 +197,44 @@ export default class Game {
 
     /**
      * Evaluate and determine the status of the guess.
-     * @TODO will need some work for correct letter counts.
      */
     private evaluateRow(): void {
-        const evaluations: EvaluationStatus[] = [];
+        const answerLetters = this._answer.split(""); // Break into an array and remove letters as we evaluate.
 
-        for (let i = 0; i < this._characters; i++) {
-            const letter = this._board[this._currentGuess][i];
-            let evaluation: EvaluationStatus = EvaluationStatus.Absent;
-
-            // If the letter is in the correct spot,
-            // mark it as such and move on.
+        // Mark as correct.
+        this._board[this._currentGuess].forEach((letter, i) => {
             if (letter === this._answer[i]) {
-                evaluation = EvaluationStatus.Correct;
-                evaluations[i] = evaluation;
-                this.setLetterEvaluation(letter, evaluation);
-                continue;
+                this._evaluations[this._currentGuess][i] = EvaluationStatus.Correct;
+                this._letterEvaluations.set(letter, EvaluationStatus.Correct);
+                answerLetters[i] = null;
             }
+        });
 
-            // Otherwise, see if it exists in the word at all.
-            for (let k = 0; k < this._characters; k++) {
-                if (letter === this._answer[k]) {
-                    evaluation = EvaluationStatus.Present;
-                    break;
+        // Mark as present.
+        this._board[this._currentGuess].forEach((letter, i) => {
+            if (
+                this._evaluations[this._currentGuess][i] === EvaluationStatus.Unknown &&
+                answerLetters.includes(letter)
+            ) {
+                this._evaluations[this._currentGuess][i] = EvaluationStatus.Present;
+                answerLetters[answerLetters.indexOf(letter)] = null; // Replace first instance of the letter.
+
+                if (!this._letterEvaluations.has(letter)) {
+                    this._letterEvaluations.set(letter, EvaluationStatus.Present);
                 }
             }
+        });
 
-            evaluations[i] = evaluation;
-            this.setLetterEvaluation(letter, evaluation);
-        }
+        // Mark as absent.
+        this._board[this._currentGuess].forEach((letter, i) => {
+            if (this._evaluations[this._currentGuess][i] === EvaluationStatus.Unknown) {
+                this._evaluations[this._currentGuess][i] = EvaluationStatus.Absent;
 
-        this._evaluations[this._currentGuess] = evaluations;
-    }
-
-    /**
-     * Handles setting the letter evaluation. Only sets the state if the new evaluation is a higher value.
-     *
-     * @param letter
-     * @param evaluation
-     */
-    private setLetterEvaluation(letter: string, evaluation: EvaluationStatus): void {
-        if (this._letterEvaluations.has(letter)) {
-            if (evaluation > this._letterEvaluations.get(letter)) {
-                this._letterEvaluations.set(letter, evaluation);
-                return;
+                if (!this._letterEvaluations.has(letter)) {
+                    this._letterEvaluations.set(letter, EvaluationStatus.Absent);
+                }
             }
-        } else {
-            this._letterEvaluations.set(letter, evaluation);
-        }
+        });
     }
 
     /**
