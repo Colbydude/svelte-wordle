@@ -1,8 +1,8 @@
 <script lang="ts">
     import { createEventDispatcher, getContext } from "svelte";
 
-    import GameStore from "../store/game";
-    import { EvaluationStatus, type GameContext, type KeyPressMessage } from "../types";
+    import { EvaluationStatus, type GameContext, type KeyPressMessage } from "$lib/types";
+    import GameStore from "$store/game";
 
     const { getGame } = getContext<GameContext>(GameStore.CONTEXT_KEY);
     const game = getGame();

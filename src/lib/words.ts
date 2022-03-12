@@ -2316,7 +2316,7 @@ export const answers = [
 ];
 
 /**
- *
+ * List of all possible valid words (that are not already answers).
  */
 export const words = [
     "aahed",

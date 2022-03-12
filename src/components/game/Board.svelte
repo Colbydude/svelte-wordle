@@ -3,8 +3,8 @@
 
     import Row from "./Row.svelte";
 
-    import GameStore from "../store/game";
-    import type { GameContext } from "../types";
+    import type { GameContext } from "$lib/types";
+    import GameStore from "$store/game";
 
     const { getGame } = getContext<GameContext>(GameStore.CONTEXT_KEY);
     const game = getGame();

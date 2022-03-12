@@ -1,4 +1,4 @@
-import type Game from "./store/game";
+import type Game from "$store/game";
 
 export enum EvaluationStatus {
     Unknown = 0,

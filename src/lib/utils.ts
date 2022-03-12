@@ -1,4 +1,4 @@
-import { answers } from "./game/words";
+import { answers } from "./words";
 
 /**
  * @TEMP Means of getting today's word. Just going to use random for now,

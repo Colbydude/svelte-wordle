@@ -1,7 +1,7 @@
 # TODOs
 
 -   [x] Implement logic so repeats of letters (or lack of) won't show incorrectly.
--   [ ] Setup a toaster component to show messages.
+-   [x] Setup a toaster component to show messages.
 -   [ ] Animations!
 -   [ ] Sharing results! ⬛️🟨🟩
 -   [ ] Keep playthrough on refresh?

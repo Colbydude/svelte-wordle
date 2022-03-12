@@ -3,9 +3,10 @@
 
     import Board from "./Board.svelte";
     import Keyboard from "./Keyboard.svelte";
+    import Toaster from "../Toaster.svelte";
 
-    import GameStore from "../store/game";
-    import { getDailyWord } from "../utils";
+    import { getDailyWord } from "$lib/utils";
+    import GameStore from "$store/game";
 
     const game = new GameStore(6, 5, getDailyWord());
 
@@ -27,3 +28,4 @@
 
 <Board />
 <Keyboard on:message={handleMessage} />
+<Toaster />

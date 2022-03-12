@@ -3,7 +3,7 @@
 </script>
 
 <script lang="ts">
-    import Game from "../game/Game.svelte";
+    import Game from "$components/game/Game.svelte";
 </script>
 
 <svelte:head>

@@ -1,8 +1,10 @@
 import { writable, type Subscriber, type Unsubscriber, type Writable } from "svelte/store";
 
-import { SUPPORTED_KEYS } from "../constants";
-import { dictionary } from "../game/words";
-import { EvaluationStatus, GameState } from "../types";
+import { toasts } from "./toasts";
+
+import { SUPPORTED_KEYS, WIN_MESSAGES } from "$lib/constants";
+import { EvaluationStatus, GameState } from "$lib/types";
+import { dictionary } from "$lib/words";
 
 export default class Game {
     static readonly CONTEXT_KEY = "game";
@@ -183,11 +185,12 @@ export default class Game {
      */
     private enterPressed(): void {
         if (this._currentChar < this._characters) {
+            toasts.showMessage("Not enough letters");
             return;
         }
 
         if (!dictionary.includes(this._board[this._currentGuess].join(""))) {
-            alert("Not a valid word!");
+            toasts.showMessage("Not in word list");
             return;
         }
 
@@ -251,7 +254,7 @@ export default class Game {
         // We won!
         if (didWin) {
             this._gameState = GameState.Win;
-            console.log("WINNER");
+            toasts.showMessage(WIN_MESSAGES[this._currentGuess], 2000);
             return;
         }
 
@@ -261,7 +264,7 @@ export default class Game {
         // Ran out of guesses. :(
         if (this._currentGuess >= this._guesses) {
             this._gameState = GameState.Lose;
-            alert(`GAME OVER - Answer was: ${this._answer}`);
+            toasts.showMessage(this._answer.toUpperCase(), 1 / 0); // lasts forever
         }
     }
 

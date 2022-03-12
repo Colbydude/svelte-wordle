@@ -28,8 +28,12 @@
         "allowJs": true,
         "checkJs": true,
         "paths": {
+            "$components": ["src/components"],
+            "$components/*": ["src/components/*"],
             "$lib": ["src/lib"],
-            "$lib/*": ["src/lib/*"]
+            "$lib/*": ["src/lib/*"],
+            "$store": ["src/store"],
+            "$store/*": ["src/store/*"]
         }
     },
     "extends": "./.svelte-kit/tsconfig.json",

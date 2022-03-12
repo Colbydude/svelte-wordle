@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { EvaluationStatus } from "../types";
+    import { EvaluationStatus } from "$lib/types";
 
     export let letter = " ";
     export let status: EvaluationStatus = EvaluationStatus.Unknown;
